@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bethlehem Seamless Gutters - Request Estimate</title>
+  <style>
+    :root {
+      --bg: #f4f4f4;
+      --panel: #ffffff;
+      --text: #222222;
+      --muted: #6b7280;
+      --border: #d1d5db;
+      --accent: #ff6a00;
+      --accent-dark: #e45d00;
+      --shadow: 0 10px 24px rgba(0,0,0,.12);
+      --radius: 10px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: transparent;
+      color: var(--text);
+    }
+
+    .intake-wrap {
+      width: 100%;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .intake-card {
+      background: var(--panel);
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .intake-header {
+      padding: 20px 20px 12px;
+      border-bottom: 1px solid #ececec;
+    }
+
+    .intake-header h2 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      line-height: 1.1;
+    }
+
+    .intake-header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .intake-form {
+      padding: 20px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .grid-2 {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .label {
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .req { color: #dc2626; }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 14px;
+      font-size: 16px;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(255,106,0,.15);
+    }
+
+    textarea {
+      min-height: 140px;
+      resize: vertical;
+    }
+
+    .check-group {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 16px;
+      padding-top: 4px;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 16px;
+    }
+
+    .check-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      padding: 0;
+      margin: 0;
+      accent-color: var(--accent);
+    }
+
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .actions {
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn {
+      appearance: none;
+      border: 0;
+      background: var(--accent);
+      color: #fff;
+      padding: 15px 18px;
+      border-radius: var(--radius);
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform .05s ease, background .15s ease;
+    }
+
+    .btn:hover { background: var(--accent-dark); }
+    .btn:active { transform: translateY(1px); }
+    .btn[disabled] { opacity: .65; cursor: not-allowed; }
+
+    .helper,
+    .error,
+    .success {
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .helper { color: var(--muted); }
+    .error { color: #b91c1c; display: none; }
+    .success {
+      display: none;
+      color: #166534;
+      background: #ecfdf5;
+      border: 1px solid #bbf7d0;
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+
+    .hidden {
+      position: absolute !important;
+      left: -9999px !important;
+      width: 1px !important;
+      height: 1px !important;
+      overflow: hidden !important;
+    }
+
+    @media (max-width: 640px) {
+      .grid-2,
+      .check-group {
+        grid-template-columns: 1fr;
+      }
+
+      .intake-header h2 {
+        font-size: 24px;
+      }
+
+      .intake-form,
+      .intake-header {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="intake-wrap">
+    <div class="intake-card">
+      <div class="intake-header">
+        <h2>Request an Estimate</h2>
+        <p>Fill this out and we’ll follow up during business hours.</p>
+      </div>
+
+      <form id="intakeForm" class="intake-form" novalidate>
+        <div id="formSuccess" class="success">Thanks — your request was sent successfully.</div>
+
+        <div class="grid grid-2">
+          <div class="field">
+            <label class="label" for="firstName">First Name <span class="req">*</span></label>
+            <input id="firstName" name="firstName" type="text" autocomplete="given-name" required />
+            <div class="error" data-error-for="firstName">First name is required.</div>
+          </div>
+
+          <div class="field">
+            <label class="label" for="lastName">Last Name <span class="req">*</span></label>
+            <input id="lastName" name="lastName" type="text" autocomplete="family-name" required />
+            <div class="error" data-error-for="lastName">Last name is required.</div>
+          </div>
+        </div>
+
+        <div class="grid" style="margin-top:14px;">
+          <div class="field">
+            <label class="label" for="street">Street Address <span class="req">*</span></label>
+            <input id="street" name="street" type="text" autocomplete="street-address" required />
+            <div class="error" data-error-for="street">Street address is required.</div>
+          </div>
+
+          <div class="grid grid-2">
+            <div class="field">
+              <label class="label" for="city">City <span class="req">*</span></label>
+              <input id="city" name="city" type="text" autocomplete="address-level2" required />
+              <div class="error" data-error-for="city">City is required.</div>
+            </div>
+
+            <div class="field">
+              <label class="label" for="zip">Zip Code <span class="req">*</span></label>
+              <input id="zip" name="zip" type="text" inputmode="numeric" autocomplete="postal-code" maxlength="10" required />
+              <div class="error" data-error-for="zip">Zip code is required.</div>
+            </div>
+          </div>
+
+          <div class="grid grid-2">
+            <div class="field">
+              <label class="label" for="phone">Phone Number <span class="req">*</span></label>
+              <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(000) 000-0000" required />
+              <div class="error" data-error-for="phone">Phone number is required.</div>
+            </div>
+
+            <div class="field">
+              <label class="label" for="email">Email</label>
+              <input id="email" name="email" type="email" autocomplete="email" placeholder="example@gmail.com" />
+              <div class="error" data-error-for="email">Enter a valid email.</div>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="label">Services <span class="req">*</span></div>
+            <div class="check-group">
+              <label class="check-item"><input type="checkbox" name="services" value="Gutters" /> Gutters</label>
+              <label class="check-item"><input type="checkbox" name="services" value="Covers" /> Covers</label>
+              <label class="check-item"><input type="checkbox" name="services" value="Cleaning" /> Cleaning</label>
+              <label class="check-item"><input type="checkbox" name="services" value="Repair" /> Repair</label>
+              <label class="check-item"><input type="checkbox" name="services" value="Other" /> Other</label>
+            </div>
+            <div class="error" data-error-for="services">Select at least one service.</div>
+          </div>
+
+          <div class="field">
+            <label class="label" for="details">Anything we should know?</label>
+            <textarea id="details" name="details" maxlength="500" placeholder="Replace existing gutters with covers..."></textarea>
+            <div class="meta-row">
+              <span class="helper">Max 500 characters.</span>
+              <span id="charCount">0 / 500</span>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label" for="contactMethod">How should we contact you? <span class="req">*</span></label>
+            <select id="contactMethod" name="contactMethod" required>
+              <option value="">Please Select</option>
+              <option value="Phone Call">Phone Call</option>
+              <option value="Text Message">Text Message</option>
+              <option value="Email">Email</option>
+            </select>
+            <div class="helper">Business Hours: 9am-5pm</div>
+            <div class="error" data-error-for="contactMethod">Please select a contact method.</div>
+          </div>
+        </div>
+
+        <div class="hidden" aria-hidden="true">
+          <label for="website">Website</label>
+          <input id="website" name="website" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+
+        <div class="actions">
+          <button id="submitBtn" class="btn" type="submit">Submit</button>
+          <div id="formMessage" class="helper">Set your endpoint in the <code>FORM_ENDPOINT</code> constant before going live.</div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const FORM_ENDPOINT = "https://YOUR-ENDPOINT-HERE.com/lead-intake";
+
+    const form = document.getElementById("intakeForm");
+    const details = document.getElementById("details");
+    const charCount = document.getElementById("charCount");
+    const submitBtn = document.getElementById("submitBtn");
+    const formMessage = document.getElementById("formMessage");
+    const formSuccess = document.getElementById("formSuccess");
+
+    const fieldsToValidate = ["firstName", "lastName", "street", "city", "zip", "phone", "email", "contactMethod"];
+
+    function showError(name, show, message) {
+      const el = document.querySelector(`[data-error-for="${name}"]`);
+      if (!el) return;
+      if (message) el.textContent = message;
+      el.style.display = show ? "block" : "none";
+    }
+
+    function validateEmail(email) {
+      if (!email) return true;
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function formatPhone(value) {
+      const digits = value.replace(/\D/g, "").slice(0, 10);
+      const parts = [];
+      if (digits.length > 0) parts.push("(" + digits.slice(0, 3));
+      if (digits.length >= 4) parts[0] += ") ";
+      if (digits.length >= 4) parts.push(digits.slice(3, 6));
+      if (digits.length >= 7) parts.push("-" + digits.slice(6, 10));
+      return parts.join("");
+    }
+
+    function getSelectedServices() {
+      return Array.from(form.querySelectorAll('input[name="services"]:checked')).map(el => el.value);
+    }
+
+    function validateForm() {
+      let valid = true;
+
+      fieldsToValidate.forEach((name) => {
+        const field = form.elements[name];
+        if (!field) return;
+        const value = (field.value || "").trim();
+
+        if (["firstName", "lastName", "street", "city", "zip", "phone", "contactMethod"].includes(name) && !value) {
+          showError(name, true);
+          valid = false;
+        } else if (name === "email" && !validateEmail(value)) {
+          showError(name, true, "Enter a valid email.");
+          valid = false;
+        } else {
+          showError(name, false);
+        }
+      });
+
+      const services = getSelectedServices();
+      if (!services.length) {
+        showError("services", true);
+        valid = false;
+      } else {
+        showError("services", false);
+      }
+
+      return valid;
+    }
+
+    details.addEventListener("input", () => {
+      charCount.textContent = `${details.value.length} / 500`;
+    });
+
+    form.phone.addEventListener("input", (e) => {
+      e.target.value = formatPhone(e.target.value);
+    });
+
+    fieldsToValidate.forEach((name) => {
+      const field = form.elements[name];
+      if (!field) return;
+      field.addEventListener("blur", validateForm);
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      formSuccess.style.display = "none";
+
+      if (form.website.value.trim()) {
+        formMessage.textContent = "Submission blocked.";
+        return;
+      }
+
+      if (!validateForm()) {
+        formMessage.textContent = "Please fix the highlighted fields.";
+        return;
+      }
+
+      const payload = {
+        firstName: form.firstName.value.trim(),
+        lastName: form.lastName.value.trim(),
+        street: form.street.value.trim(),
+        city: form.city.value.trim(),
+        zip: form.zip.value.trim(),
+        phone: form.phone.value.trim(),
+        email: form.email.value.trim(),
+        services: getSelectedServices(),
+        details: form.details.value.trim(),
+        contactMethod: form.contactMethod.value,
+        source: "website",
+        submittedAt: new Date().toISOString()
+      };
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Submitting...";
+      formMessage.textContent = "";
+
+      try {
+        const res = await fetch(FORM_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) throw new Error("Request failed");
+
+        form.reset();
+        charCount.textContent = "0 / 500";
+        formSuccess.style.display = "block";
+        formMessage.textContent = "";
+      } catch (err) {
+        formMessage.textContent = "Form submit failed. Update the endpoint and make sure your backend accepts POST requests.";
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit";
+      }
+    });
+  </script>
+</body>
+</html>
