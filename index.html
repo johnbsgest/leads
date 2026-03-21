@@ -167,22 +167,75 @@
     .btn[disabled] { opacity: .65; cursor: not-allowed; }
 
     .helper,
-    .error,
-    .success {
+    .error {
       font-size: 14px;
       line-height: 1.4;
     }
 
     .helper { color: var(--muted); }
     .error { color: #b91c1c; display: none; }
-    .success {
+
+    .modal-overlay {
       display: none;
-      color: #166534;
-      background: #ecfdf5;
-      border: 1px solid #bbf7d0;
-      border-radius: 10px;
-      padding: 12px 14px;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
     }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 20px 48px rgba(0,0,0,.22);
+      padding: 36px 32px 28px;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+    }
+
+    .modal-icon {
+      width: 56px;
+      height: 56px;
+      background: #ecfdf5;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+
+    .modal-icon svg { width: 28px; height: 28px; }
+
+    .modal-box h3 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      color: #166534;
+    }
+
+    .modal-box p {
+      margin: 0 0 20px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    .modal-close {
+      appearance: none;
+      border: 0;
+      background: var(--accent);
+      color: #fff;
+      padding: 12px 28px;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .modal-close:hover { background: var(--accent-dark); }
 
     .hidden {
       position: absolute !important;
@@ -218,7 +271,6 @@
       </div>
 
       <form id="intakeForm" class="intake-form" novalidate>
-        <div id="formSuccess" class="success">Thanks — your request was sent successfully.</div>
 
         <div class="grid grid-2">
           <div class="field">
@@ -316,6 +368,19 @@
     </div>
   </div>
 
+  <div id="successModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-box">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+      </div>
+      <h3 id="modalTitle">Request Sent!</h3>
+      <p>Thanks — your request was sent successfully. We'll follow up during business hours.</p>
+      <button class="modal-close" id="modalClose">Close</button>
+    </div>
+  </div>
+
   <script>
     const FORM_ENDPOINT = "/.netlify/functions/lead-intake";
 
@@ -324,7 +389,11 @@
     const charCount = document.getElementById("charCount");
     const submitBtn = document.getElementById("submitBtn");
     const formMessage = document.getElementById("formMessage");
-    const formSuccess = document.getElementById("formSuccess");
+    const successModal = document.getElementById("successModal");
+    const modalClose = document.getElementById("modalClose");
+
+    modalClose.addEventListener("click", () => successModal.classList.remove("open"));
+    successModal.addEventListener("click", (e) => { if (e.target === successModal) successModal.classList.remove("open"); });
 
     const fieldsToValidate = ["firstName", "lastName", "street", "city", "zip", "phone", "email", "contactMethod"];
 
@@ -402,7 +471,6 @@
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
-      formSuccess.style.display = "none";
 
       if (form.website.value.trim()) {
         formMessage.textContent = "Submission blocked.";
@@ -444,7 +512,7 @@
 
         form.reset();
         charCount.textContent = "0 / 500";
-        formSuccess.style.display = "block";
+        successModal.classList.add("open");
         formMessage.textContent = "";
       } catch (err) {
         formMessage.textContent = "Form submit failed. Update the endpoint and make sure your backend accepts POST requests.";
