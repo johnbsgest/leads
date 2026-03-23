@@ -899,14 +899,21 @@
           body: JSON.stringify(payload)
         });
 
-        if (!res.ok) throw new Error("Request failed");
+        if (!res.ok) {
+          let errMsg = `Server error (${res.status})`;
+          try {
+            const errData = await res.json();
+            if (errData.error) errMsg = errData.error;
+          } catch (_) {}
+          throw new Error(errMsg);
+        }
 
         form.reset();
         charCount.textContent = "0 / 500";
         successModal.classList.add("open");
         formMessage.textContent = "";
       } catch (err) {
-        formMessage.textContent = "Form submit failed. Update the endpoint and make sure your backend accepts POST requests.";
+        formMessage.textContent = "Submission failed: " + err.message;
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = "Submit";
