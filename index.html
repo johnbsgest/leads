@@ -822,8 +822,10 @@
 
       // Validate address via hidden fields
       const streetVal = document.getElementById("street").value.trim();
-      if (!streetVal) {
-        showError("street", true);
+      const cityVal   = document.getElementById("city").value.trim();
+      const zipVal    = document.getElementById("zip").value.trim();
+      if (!streetVal || !cityVal || !zipVal) {
+        showError("street", true, "Select a valid address from the suggestions.");
         valid = false;
       } else {
         showError("street", false);
@@ -940,7 +942,9 @@
         place.address_components.forEach(comp => {
           if (comp.types.includes("street_number")) streetNumber = comp.long_name;
           if (comp.types.includes("route"))          route       = comp.long_name;
-          if (comp.types.includes("locality"))       city        = comp.long_name;
+          if (comp.types.includes("locality"))             city = comp.long_name;
+          else if (comp.types.includes("sublocality_level_1") && !city) city = comp.long_name;
+          else if (comp.types.includes("administrative_area_level_3") && !city) city = comp.long_name;
           if (comp.types.includes("postal_code"))    zip         = comp.long_name;
         });
 
