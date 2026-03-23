@@ -914,7 +914,7 @@
     });
   </script>
   <!-- Google Places Autocomplete -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAjmJO3w5cRP9NKlQJc4LsHozyW5UGby3M&libraries=places&callback=initAutocomplete" async defer></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=%%GOOGLE_MAPS_API_KEY%%&libraries=places&callback=initAutocomplete" async defer></script>
   <script>
     function initAutocomplete() {
       const input = document.getElementById("addressSearch");
@@ -950,7 +950,7 @@
         const address = encodeURIComponent(fullStreet + ", " + city + " " + zip);
         const svImg = document.getElementById("streetViewImg");
         const svWrap = document.getElementById("streetViewWrap");
-        const apiKey = "AIzaSyAjmJO3w5cRP9NKlQJc4LsHozyW5UGby3M";
+        const apiKey = "%%GOOGLE_MAPS_API_KEY%%";
         svImg.style.opacity = "0";
         svImg.src = `https://maps.googleapis.com/maps/api/streetview?size=720x200&location=${address}&fov=90&pitch=5&key=${apiKey}`;
         svImg.onload = () => {
