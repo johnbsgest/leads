@@ -130,6 +130,7 @@
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
+      outline: none;
       transition: border-color .15s ease, color .15s ease, background .15s ease, box-shadow .15s ease;
       width: 100%;
     }
@@ -186,6 +187,7 @@
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
+      outline: none;
       transition: border-color .15s ease, color .15s ease, box-shadow .15s ease;
       width: 100%;
     }
@@ -236,6 +238,7 @@
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
+      outline: none;
       transition: border-color .15s ease, color .15s ease, box-shadow .15s ease;
       width: 100%;
     }
@@ -707,6 +710,7 @@
 
     document.querySelectorAll(".covers-card").forEach(card => {
       card.addEventListener("click", () => {
+        card.blur();
         document.querySelectorAll(".covers-card").forEach(c => c.classList.remove("selected"));
         card.classList.add("selected");
         document.getElementById("hasCovers").value = card.dataset.value;
@@ -716,6 +720,7 @@
     // Contact method cards — single select
     document.querySelectorAll(".contact-card").forEach(card => {
       card.addEventListener("click", () => {
+        card.blur();
         document.querySelectorAll(".contact-card").forEach(c => c.classList.remove("selected"));
         card.classList.add("selected");
         document.getElementById("contactMethod").value = card.dataset.value;
@@ -746,6 +751,7 @@
 
       card.addEventListener("click", (e) => {
         if (e.target.closest(".other-textarea")) return;
+        card.blur();
         const isOther = card.dataset.value === "Other";
         const otherInput = document.getElementById("otherDetails");
 
