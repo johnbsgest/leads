@@ -359,6 +359,7 @@
 
     .helper { color: var(--muted); }
     .error { color: #b91c1c; display: none; }
+    #coversWarning { font-size: 13px; font-weight: 500; color: #b91c1c; background: #fef2f2; border: 1px solid #fca5a5; border-radius: 6px; padding: 7px 10px; margin-top: 8px; }
 
     .modal-overlay {
       display: none;
@@ -560,7 +561,7 @@
                 Covers
               </button>
               <button type="button" class="service-card" data-value="Cleaning">
-                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAAFF0lEQVR4nO2dfWhcRRDAf6mWWCoWLBghggW/goqKggWtVFCwiUkVBcUWtGBRQaFYpYKCVYsfWFBUqigoWFBBQcGKovWjFfwKWlHBQoWKjUr8aiW1Uj/Sk4UXOYa7995d783Ovt0fzB9J7r2Zncnd7s6bnYNEIpFIJBKJRCKRSCQSiUSiPlwMfA80knAwMgEM9yIgEwYG06iJ7OpFQHwPolEzSQGh5gFJdEYKiDFSQIyRAmKM4Cf1b0uu1y8BtgB/AFPA28BIB+MayXQFP6lryESBTQ/kXLuu5Lh8bXaD3BhOFLwziq4fNjqunmwMh5WN3wksybFnS4l7vFVyXDuVg5E3rq5YKpRsRp+9JQa/B39sFrY4n1XGyUKZmxQtBuR3/CEXCs5nlXEYMN2k7F+gH13eK/kR8RpworJt/ZlPZmyYznxWKd+JgQ+hy1gHn9t/AeuBeUq2DQn9zleV845QOoo+93Y4oU4CK4FZFds1KvQ6X1XOU0LpKvwwCrybzSm/AW8CK4CtOYH5FFhUoU2rhL4nUeA2ofRR7DFWsKTdBCyoQO9jQs8aFLhcKH0dm8zJ/nmm2gTlz2zHf3gPdb4hdFyGAqcLpTuwzSCwETjQJjAuhXI10NcDXd+Ie5+GAnPF4P4BZmOfs4GPcj7GPgYWHsT9DwX+brrfgcxXKvwoBnMcYdCXvRsm2wRlOns3DXRx7+PFvX5AkfeF8osIi7nAXcD+NoHZm/29k03vEnEPt9pT4xmh/EbC5ATgxZyPsR0d7LNuEtc+jSJ3COUPETYXAF/lBMYlDE8puMfD4prbUeRKofxVwmc2cB3wS5uguAn7kZw0zCbx+is0jT9LKP+a+nBk5vjmJGGz/JrtyA8R120XrztT0+gjhPL9LQwMnTMK0jDbgPOy185qsUDQSmj+z8/CgGOpJ2Ml0jDni9/95MPQD4URbmKsK3OAtcC+nP1L888f+DByozDieurPYEEaZkae9WHcncII9yAoFhYBn+UE5ItsDlJluTDiZeKir8I0TNfJumYDviRO5hUU3e3psKKya+YLxft6lMIOjb6cyV712bpjt1DsJr3YGGyRmNxeRcViGcaF4sXEx2Lhg/EsDXNzVvFZtni8JzwvjLmW+FgpfOB84o17hDH3ER/3Cx84n3jjGmGMe7YQGy8JHzifeONcYYzbLMXG58IHzifeGBDGuJKb2JgSPhiwZtBRxMPRLZa83tkmjDqHuHJajSZxvjA3qbn8TiyssLiokcu+u4mHdRaX/XJj9Bzx8ILFjbF8fPkJ8TBuMXV0jDDKJRxjYbfF5Gqr9LMrpak78y0/fpBVf+7hVd1ZaPkB3SvCuGXUn+WWH2GvF8a5Aoi6s1aM+UEMcYOFMhhlTJdBXWihUEwZ04WCCyyUUipjupTWRLGxIkEUm3stx1cmiOMYXg+sKBPEgSWvR7qUCeJIn9dDj8oEcejV67FgZYI4Fu714LwyQTRO8NpaQpGgWot4ab6iTFDNd7y0J1ImlPZU/hp4KbMmgAZubVvclZGicv0RTz3ay4qvFoddNYEsK+5IWDt2GXB6nrgvTTPLUIQBOQnDyEbCvej1Pqzco70T8dFI2narbWVkq3X3j2Ie1Wb0yizt4lsYvPOEMHo19WG1GNvjBMCtwugN1IcNYmy3EACXGphsG0rivu3HPKcacFRDSYr6MJqgv+SXroQuUyEseWdYlpUCNWoqk8BVvp2cSCQSiUQikUgkEvSA/wB1gti/sZTdDAAAAABJRU5ErkJggg==" class="service-icon" alt="Cleaning" />
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAYAAABw4pVUAAAACXBIWXMAAAsTAAALEwEAmpwYAAAFF0lEQVR4nO2dfWhcRRDAf6mWWCoWLBghggW/goqKggWtVFCwiUkVBcUWtGBRQaFYpYKCVYsfWFBUqigoWFBBQcGKovWjFfwKWlHBQoWKjUr8aiW1Uj/Sk4UXOYa7995d783Ovt0fzB9J7r2Zncnd7s6bnYNEIpFIJBKJRCKRSCQSiUSiPlwMfA80knAwMgEM9yIgEwYG06iJ7OpFQHwPolEzSQGh5gFJdEYKiDFSQIyRAmKM4Cf1b0uu1y8BtgB/AFPA28BIB+MayXQFP6lryESBTQ/kXLuu5Lh8bXaD3BhOFLwziq4fNjqunmwMh5WN3wksybFnS4l7vFVyXDuVg5E3rq5YKpRsRp+9JQa/B39sFrY4n1XGyUKZmxQtBuR3/CEXCs5nlXEYMN2k7F+gH13eK/kR8RpworJt/ZlPZmyYznxWKd+JgQ+hy1gHn9t/AeuBeUq2DQn9zleV845QOoo+93Y4oU4CK4FZFds1KvQ6X1XOU0LpKvwwCrybzSm/AW8CK4CtOYH5FFhUoU2rhL4nUeA2ofRR7DFWsKTdBCyoQO9jQs8aFLhcKH0dm8zJ/nmm2gTlz2zHf3gPdb4hdFyGAqcLpTuwzSCwETjQJjAuhXI10NcDXd+Ie5+GAnPF4P4BZmOfs4GPcj7GPgYWHsT9DwX+brrfgcxXKvwoBnMcYdCXvRsm2wRlOns3DXRx7+PFvX5AkfeF8osIi7nAXcD+NoHZm/29k03vEnEPt9pT4xmh/EbC5ATgxZyPsR0d7LNuEtc+jSJ3COUPETYXAF/lBMYlDE8puMfD4prbUeRKofxVwmc2cB3wS5uguAn7kZw0zCbx+is0jT9LKP+a+nBk5vjmJGGz/JrtyA8R120XrztT0+gjhPL9LQwMnTMK0jDbgPOy185qsUDQSmj+z8/CgGOpJ2Ml0jDni9/95MPQD4URbmKsK3OAtcC+nP1L888f+DByozDieurPYEEaZkae9WHcncII9yAoFhYBn+UE5ItsDlJluTDiZeKir8I0TNfJumYDviRO5hUU3e3psKKya+YLxft6lMIOjb6cyV712bpjt1DsJr3YGGyRmNxeRcViGcaF4sXEx2Lhg/EsDXNzVvFZtni8JzwvjLmW+FgpfOB84o17hDH3ER/3Cx84n3jjGmGMe7YQGy8JHzifeONcYYzbLMXG58IHzifeGBDGuJKb2JgSPhiwZtBRxMPRLZa83tkmjDqHuHJajSZxvjA3qbn8TiyssLiokcu+u4mHdRaX/XJj9Bzx8ILFjbF8fPkJ8TBuMXV0jDDKJRxjYbfF5Gqr9LMrpak78y0/fpBVf+7hVd1ZaPkB3SvCuGXUn+WWH2GvF8a5Aoi6s1aM+UEMcYOFMhhlTJdBXWihUEwZ04WCCyyUUipjupTWRLGxIkEUm3stx1cmiOMYXg+sKBPEgSWvR7qUCeJIn9dDj8oEcejV67FgZYI4Fu714LwyQTRO8NpaQpGgWot4ab6iTFDNd7y0J1ImlPZU/hp4KbMmgAZubVvclZGicv0RTz3ay4qvFoddNYEsK+5IWDt2GXB6nrgvTTPLUIQBOQnDyEbCvej1Pqzco70T8dFI2narbWVkq3X3j2Ie1Wb0yizt4lsYvPOEMHo19WG1GNvjBMCtwugN1IcNYmy3EACXGphsG0rivu3HPKcacFRDSYr6MJqgv+SXroQuUyEseWdYlpUCNWoqk8BVvp2cSCQSiUQikUgkEvSA/wB1gti/sZTdDAAAAABJRU5ErkJggg==" class="service-icon service-icon--static" alt="Cleaning" data-animated="images/bucket_shake.gif" />
                 Cleaning
               </button>
               <button type="button" class="service-card" data-value="Repair">
@@ -590,6 +591,8 @@
                 No
               </button>
             </div>
+            <div class="error" data-error-for="hasCovers" style="display:none;">Please select Yes or No.</div>
+            <div id="coversWarning" style="display:none;">Plastic type covers will be removed but not re-installed.</div>
             <input type="hidden" id="hasCovers" name="hasCovers" />
           </div>
 
@@ -705,6 +708,7 @@
         q.style.display = "none";
         document.querySelectorAll(".covers-card").forEach(c => c.classList.remove("selected"));
         document.getElementById("hasCovers").value = "";
+        document.getElementById("coversWarning").style.display = "none";
       }
     }
 
@@ -714,6 +718,7 @@
         document.querySelectorAll(".covers-card").forEach(c => c.classList.remove("selected"));
         card.classList.add("selected");
         document.getElementById("hasCovers").value = card.dataset.value;
+        document.getElementById("coversWarning").style.display = card.dataset.value === "Yes" ? "block" : "none";
       });
     });
 
@@ -847,6 +852,17 @@
         valid = false;
       } else {
         showError("services", false);
+      }
+
+      // Validate covers if Cleaning is selected
+      if (services.includes("Cleaning")) {
+        const coversVal = document.getElementById("hasCovers").value;
+        if (!coversVal) {
+          showError("hasCovers", true);
+          valid = false;
+        } else {
+          showError("hasCovers", false);
+        }
       }
 
       return valid;
