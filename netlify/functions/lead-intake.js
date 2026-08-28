@@ -1,9 +1,17 @@
 const { createClient } = require('@supabase/supabase-js');
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+// Inquiries land in the APP project (yqzuugqgvxyyvkkqqyok) as of its migration
+// 016. They used to go to a Supabase project of their own, which left the office
+// app's customers in one database and the leads that produced them in another —
+// so leads.customer_id could never be a real foreign key, and converting a lead
+// into a customer could never be one transaction.
+//
+// The URL is hardcoded and the key read from APP_SUPABASE_SERVICE_KEY, matching
+// how every function in the App/Quote repo reaches this project. The old generic
+// SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY vars are no longer read at all, so a
+// stale value left on this Netlify site cannot quietly send new inquiries back
+// to the retired project.
+const SUPABASE_URL = 'https://yqzuugqgvxyyvkkqqyok.supabase.co';
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -12,6 +20,18 @@ exports.handler = async (event) => {
       body: JSON.stringify({ error: 'Method not allowed' }),
     };
   }
+
+  const SERVICE_KEY = process.env.APP_SUPABASE_SERVICE_KEY;
+  if (!SERVICE_KEY) {
+    // Built inside the handler rather than at module load so a missing key is a
+    // logged 500 on one submission, not a function that fails to boot at all.
+    console.error('lead-intake: APP_SUPABASE_SERVICE_KEY is not set');
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: 'Server error' }),
+    };
+  }
+  const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 
   try {
     const data = JSON.parse(event.body || '{}');
