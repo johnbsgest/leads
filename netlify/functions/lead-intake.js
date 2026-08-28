@@ -62,6 +62,7 @@ exports.handler = async (event) => {
         phone: data.phone.trim(),
         email: data.email ? data.email.trim() : null,
         services: data.services,
+        other_details: data.otherDetails ? data.otherDetails.trim() : null,
         details: data.details ? data.details.trim() : null,
         contact_method: data.contactMethod.trim(),
         source: 'website',

@@ -694,7 +694,13 @@
     }
 
     function getSelectedServices() {
-      return Array.from(document.querySelectorAll(".service-card.selected")).map(el => el.dataset.value);
+      return Array.from(document.querySelectorAll(".service-card.selected")).map(el => {
+        if (el.dataset.value === "Other") {
+          const text = document.getElementById("otherDetails")?.value.trim();
+          return text ? `Other: ${text}` : "Other";
+        }
+        return el.dataset.value;
+      });
     }
 
     // Covers question — show when Cleaning is selected
@@ -940,6 +946,10 @@
         charCount.textContent = "0 / 500";
         document.getElementById("streetViewWrap").style.display = "none";
         document.getElementById("streetViewImg").src = "";
+        document.querySelectorAll(".service-card.selected").forEach(el => el.classList.remove("selected"));
+        document.querySelectorAll(".contact-card.selected").forEach(el => el.classList.remove("selected"));
+        document.getElementById("addressSearch").value = "";
+        document.getElementById("coversGroup").style.display = "none";
         successModal.classList.add("open");
         formMessage.textContent = "";
       } catch (err) {
@@ -951,7 +961,7 @@
     });
   </script>
   <!-- Google Places Autocomplete -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=%%GOOGLE_MAPS_API_KEY%%&libraries=places&callback=initAutocomplete" async defer></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=%%GOOGLE_MAPS_API_KEY%%&loading=async&libraries=places&callback=initAutocomplete" async defer></script>
   <script>
     function initAutocomplete() {
       const input = document.getElementById("addressSearch");
