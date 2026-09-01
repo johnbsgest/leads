@@ -949,7 +949,7 @@
         document.querySelectorAll(".service-card.selected").forEach(el => el.classList.remove("selected"));
         document.querySelectorAll(".contact-card.selected").forEach(el => el.classList.remove("selected"));
         document.getElementById("addressSearch").value = "";
-        document.getElementById("coversGroup").style.display = "none";
+        updateCoversQuestion();
         successModal.classList.add("open");
         formMessage.textContent = "";
       } catch (err) {
