@@ -3,6 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="/leads.manifest.json" />
+  <link rel="apple-touch-icon" href="/images/app-icon-192.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Leads" />
+  <meta name="theme-color" content="#ff6a00" />
   <title>Bethlehem Seamless Gutters - Request Estimate</title>
   <style>
     :root {
@@ -24,6 +30,12 @@
       font-family: Arial, Helvetica, sans-serif;
       background: transparent;
       color: var(--text);
+    }
+
+    /* Transparent so the form sits cleanly in the Weebly iframe. Opened as an
+       installed app there is no page behind it, so give it the panel grey. */
+    @media (display-mode: fullscreen), (display-mode: standalone) {
+      body { background: var(--bg); }
     }
 
     .intake-wrap {
