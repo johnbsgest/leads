@@ -53,6 +53,17 @@
       overflow: hidden;
     }
 
+    /* Logo art has its own black field, so the banner matches it edge to edge. */
+    .intake-logo {
+      background: #000;
+    }
+
+    .intake-logo img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
     .intake-header {
       padding: 20px 20px 12px;
       border-bottom: 1px solid #ececec;
@@ -371,6 +382,61 @@
 
     .helper { color: var(--muted); }
     .error { color: #b91c1c; display: none; }
+    /* Optional photos. The add button borrows the service-card look. */
+    .photo-add {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 14px;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      background: #fff;
+      color: var(--muted);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .photo-add svg { width: 22px; height: 22px; }
+    .photo-add[disabled] { opacity: .5; cursor: not-allowed; }
+    @media (hover: hover) {
+      .photo-add:not([disabled]):hover { border-color: var(--accent); color: var(--accent); }
+    }
+    .photo-thumbs {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+    .photo-thumbs:empty { display: none; }
+    .photo-thumb {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #f3f4f6;
+    }
+    .photo-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .photo-thumb button {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 24px;
+      height: 24px;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(0,0,0,.65);
+      color: #fff;
+      font-size: 16px;
+      line-height: 24px;
+      padding: 0;
+      cursor: pointer;
+    }
+    @media (max-width: 640px) {
+      .photo-thumbs { grid-template-columns: repeat(3, 1fr); }
+    }
+
     #coversWarning { font-size: 13px; font-weight: 500; color: #b91c1c; background: #fef2f2; border: 1px solid #fca5a5; border-radius: 6px; padding: 7px 10px; margin-top: 8px; }
 
     .modal-overlay {
@@ -508,6 +574,9 @@
 <body>
   <div class="intake-wrap">
     <div class="intake-card">
+      <div class="intake-logo">
+        <img src="images/bsg-logo-banner.png" alt="Bethlehem Seamless Gutters" width="2146" height="732" />
+      </div>
       <div class="intake-header">
         <h2>Request an Estimate</h2>
         <p>Fill this out and we’ll follow up during business hours.</p>
@@ -615,6 +684,18 @@
               <span class="helper">Max 500 characters.</span>
               <span id="charCount">0 / 500</span>
             </div>
+          </div>
+
+          <div class="field">
+            <div class="label">Photos <span class="helper" style="font-weight:400;">(optional)</span></div>
+            <div class="helper">A picture of the problem area helps us quote faster. Up to 5.</div>
+            <div id="photoThumbs" class="photo-thumbs"></div>
+            <button type="button" id="photoAdd" class="photo-add">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+              <span id="photoAddLabel">Add Photos</span>
+            </button>
+            <input type="file" id="photoInput" accept="image/*" multiple hidden />
+            <div class="error" data-error-for="photos"></div>
           </div>
 
           <div class="field">
@@ -900,6 +981,91 @@
       field.addEventListener("blur", validateForm);
     });
 
+    // ── Optional photos ──────────────────────────────────────────────────────
+    // Shrunk in the browser before they are sent: a phone photo is 3–8 MB and
+    // the whole submission has to fit in one Netlify function request (6 MB).
+    // 1600px JPEG is still plenty to see a sagging run or a split seam.
+    const MAX_PHOTOS = 5;
+    const MAX_PHOTO_BYTES = 5 * 1024 * 1024; // all photos together, as base64
+    const photoInput = document.getElementById("photoInput");
+    const photoAdd = document.getElementById("photoAdd");
+    const photoAddLabel = document.getElementById("photoAddLabel");
+    const photoThumbs = document.getElementById("photoThumbs");
+    let photos = []; // data URLs, image/jpeg
+
+    function shrinkPhoto(file, maxSize = 1600, quality = 0.8) {
+      return new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => {
+          let w = img.naturalWidth, h = img.naturalHeight;
+          if (w > maxSize || h > maxSize) {
+            if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+            else { w = Math.round(w * maxSize / h); h = maxSize; }
+          }
+          const canvas = document.createElement("canvas");
+          canvas.width = w; canvas.height = h;
+          canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+          URL.revokeObjectURL(url);
+          resolve(canvas.toDataURL("image/jpeg", quality));
+        };
+        img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("unreadable")); };
+        img.src = url;
+      });
+    }
+
+    function renderPhotos() {
+      photoThumbs.innerHTML = "";
+      photos.forEach((src, i) => {
+        const thumb = document.createElement("div");
+        thumb.className = "photo-thumb";
+        const img = document.createElement("img");
+        img.src = src;
+        img.alt = `Photo ${i + 1}`;
+        const del = document.createElement("button");
+        del.type = "button";
+        del.setAttribute("aria-label", `Remove photo ${i + 1}`);
+        del.textContent = "×";
+        del.addEventListener("click", () => {
+          photos.splice(i, 1);
+          showError("photos", false);
+          renderPhotos();
+        });
+        thumb.append(img, del);
+        photoThumbs.appendChild(thumb);
+      });
+      const full = photos.length >= MAX_PHOTOS;
+      photoAdd.disabled = full;
+      photoAddLabel.textContent = full ? "5 photos added"
+        : photos.length ? `Add More (${photos.length}/${MAX_PHOTOS})` : "Add Photos";
+    }
+
+    photoAdd.addEventListener("click", () => photoInput.click());
+
+    photoInput.addEventListener("change", async () => {
+      const files = Array.from(photoInput.files || []);
+      photoInput.value = "";
+      if (!files.length) return;
+
+      const room = MAX_PHOTOS - photos.length;
+      const take = files.slice(0, room);
+      let skipped = files.length - take.length;
+      let unreadable = 0;
+
+      photoAdd.disabled = true;
+      photoAddLabel.textContent = "Adding…";
+      for (const file of take) {
+        try { photos.push(await shrinkPhoto(file)); }
+        catch (_) { unreadable++; }
+      }
+
+      const notes = [];
+      if (skipped) notes.push(`Only ${MAX_PHOTOS} photos allowed — ${skipped} not added.`);
+      if (unreadable) notes.push(`${unreadable} file${unreadable > 1 ? "s" : ""} couldn't be read as a photo.`);
+      showError("photos", notes.length > 0, notes.join(" "));
+      renderPhotos();
+    });
+
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -929,10 +1095,17 @@
         otherDetails: document.getElementById("otherDetails")?.value.trim() || "",
         hasCovers: document.getElementById("hasCovers").value || "",
         details: form.details.value.trim(),
+        photos,
         contactMethod: form.contactMethod.value,
         source: "website",
         submittedAt: new Date().toISOString()
       };
+
+      if (photos.reduce((n, p) => n + p.length, 0) > MAX_PHOTO_BYTES) {
+        showError("photos", true, "These photos are too large to send together. Please remove one and try again.");
+        formMessage.textContent = "Please fix the highlighted fields.";
+        return;
+      }
 
       submitBtn.disabled = true;
       submitBtn.textContent = "Submitting...";
@@ -961,6 +1134,9 @@
         document.querySelectorAll(".service-card.selected").forEach(el => el.classList.remove("selected"));
         document.querySelectorAll(".contact-card.selected").forEach(el => el.classList.remove("selected"));
         document.getElementById("addressSearch").value = "";
+        photos = [];
+        showError("photos", false);
+        renderPhotos();
         updateCoversQuestion();
         successModal.classList.add("open");
         formMessage.textContent = "";
@@ -1035,6 +1211,27 @@
         }
       });
     }
+  </script>
+  <script>
+    // Prefill from the website's service-area check: ?street=...&city=...&zip=...
+    // Fills the same fields picking a suggestion would, so the address counts as valid.
+    (function () {
+      const q = new URLSearchParams(location.search);
+      const street = (q.get('street') || '').trim(), city = (q.get('city') || '').trim(), zip = (q.get('zip') || '').trim();
+      if (!street) return;
+      document.getElementById('addressSearch').value = [street, city, ['NY', zip].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+      document.getElementById('street').value = street;
+      document.getElementById('city').value = city;
+      document.getElementById('zip').value = zip;
+      const svImg = document.getElementById('streetViewImg');
+      const svWrap = document.getElementById('streetViewWrap');
+      const apiKey = '%%GOOGLE_MAPS_API_KEY%%';
+      if (apiKey.includes('%%')) return;
+      svImg.style.opacity = '0';
+      svImg.onload = () => { svWrap.style.display = 'block'; svImg.style.opacity = '1'; };
+      svImg.onerror = () => { svWrap.style.display = 'none'; };
+      svImg.src = 'https://maps.googleapis.com/maps/api/streetview?size=720x200&location=' + encodeURIComponent(street + ', ' + city + ' ' + zip) + '&fov=90&pitch=5&key=' + apiKey;
+    })();
   </script>
 </body>
 </html>

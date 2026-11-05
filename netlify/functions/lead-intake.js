@@ -13,6 +13,25 @@ const { createClient } = require('@supabase/supabase-js');
 // to the retired project.
 const SUPABASE_URL = 'https://yqzuugqgvxyyvkkqqyok.supabase.co';
 
+// Customer photos. The form shrinks each one to 1600px JPEG before sending, so
+// a real one is a few hundred KB; the per-photo cap only stops abuse.
+const PHOTO_BUCKET = 'job-files';
+const MAX_PHOTOS = 5;
+const MAX_PHOTO_BYTES = 2 * 1024 * 1024;
+
+// A data URL (or bare base64) that really is a JPEG, as a Buffer; else null.
+// Checking the bytes, not the label, keeps anything but a picture out of a
+// bucket that also holds every job's PDFs.
+function decodeJpeg(s) {
+  if (typeof s !== 'string') return null;
+  const m = s.match(/^(?:data:image\/jpeg;base64,)?([A-Za-z0-9+/]+={0,2})$/);
+  if (!m) return null;
+  const buf = Buffer.from(m[1], 'base64');
+  if (buf.length < 4 || buf.length > MAX_PHOTO_BYTES) return null;
+  if (buf[0] !== 0xff || buf[1] !== 0xd8 || buf[2] !== 0xff) return null;
+  return buf;
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return {
@@ -71,8 +90,29 @@ exports.handler = async (event) => {
       };
     }
 
+    // Optional photos, checked before anything is written so a bad batch is a
+    // plain 400 rather than a lead saved with half its pictures.
+    const photos = data.photos == null ? [] : data.photos;
+    if (!Array.isArray(photos) || photos.length > MAX_PHOTOS) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: `Up to ${MAX_PHOTOS} photos allowed` }),
+      };
+    }
+    const photoBuffers = [];
+    for (const p of photos) {
+      const buf = decodeJpeg(p);
+      if (!buf) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({ error: 'One of the photos could not be read' }),
+        };
+      }
+      photoBuffers.push(buf);
+    }
+
     // Insert into Supabase
-    const { error } = await supabase.from('leads').insert([
+    const { data: lead, error } = await supabase.from('leads').insert([
       {
         first_name: data.firstName.trim(),
         last_name: data.lastName.trim(),
@@ -88,7 +128,7 @@ exports.handler = async (event) => {
         source: 'website',
         status: 'new',
       },
-    ]);
+    ]).select('id').single();
 
     if (error) {
       return {
@@ -97,9 +137,31 @@ exports.handler = async (event) => {
       };
     }
 
+    // Photos go where the office Camera already looks for a lead's pictures:
+    // job-files/customers/<lead id>/. Quote's photos.js lists that folder by
+    // lead id, and by lead id alongside customer id once the lead converts, so
+    // they show up there with no office-side change.
+    //
+    // The lead is already saved at this point. A failed upload is logged and
+    // counted, never turned into a failed submission: the customer would only
+    // send the form again and the office would get the lead twice.
+    let photosSaved = 0;
+    if (photoBuffers.length) {
+      const stamp = Date.now();
+      const results = await Promise.all(photoBuffers.map((buf, i) =>
+        supabase.storage
+          .from(PHOTO_BUCKET)
+          .upload(`customers/${lead.id}/${stamp}-${i + 1}.jpg`, buf, { contentType: 'image/jpeg' })
+      ));
+      results.forEach((r, i) => {
+        if (r.error) console.error(`lead-intake: photo ${i + 1} for lead ${lead.id} failed:`, r.error.message);
+        else photosSaved++;
+      });
+    }
+
     return {
       statusCode: 200,
-      body: JSON.stringify({ success: true }),
+      body: JSON.stringify({ success: true, photosSaved }),
     };
 
   } catch (err) {
