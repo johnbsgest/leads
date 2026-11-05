@@ -1,7 +1,7 @@
 [build]
-  # Substitute %%GOOGLE_MAPS_API_KEY%% in index.html at deploy time.
+  # Substitute %%GOOGLE_MAPS_API_KEY%% in index.html and v2.html at deploy time.
   # Set GOOGLE_MAPS_API_KEY in: Netlify Dashboard → Site → Environment variables
-  command = "sed -i 's|%%GOOGLE_MAPS_API_KEY%%|'\"$GOOGLE_MAPS_API_KEY\"'|g' index.html"
+  command = "sed -i 's|%%GOOGLE_MAPS_API_KEY%%|'\"$GOOGLE_MAPS_API_KEY\"'|g' index.html v2.html"
   publish = "."
 
 [functions]
