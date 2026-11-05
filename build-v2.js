@@ -198,5 +198,37 @@ s = s.slice(0, styleEnd) + '\n' + css + s.slice(styleEnd + 1);
 s = s.replace('  <link rel="preconnect" href="https://fonts.googleapis.com">',
   '  <script>if (window.parent !== window) document.documentElement.classList.add("embedded");</script>\n  <link rel="preconnect" href="https://fonts.googleapis.com">');
 
+// Inside the website's frame the frame never scrolls (it is as tall as the form), so
+// position: sticky can't keep "What happens next" in view. The website sends where the
+// frame sits on screen; slide the panel down to match, within the form's height.
+const follow = `  <script>
+    (function () {
+      if (window.parent === window) return;
+      const side = document.querySelector('.v2-side');
+      const body = document.querySelector('.v2-body');
+      if (!side || !body) return;
+      const wide = window.matchMedia('(min-width: 860px)');
+      let last = null;
+      function place(frameTop) {
+        if (!wide.matches) { side.style.transform = ''; return; }
+        side.style.transform = '';
+        const sideTop = side.getBoundingClientRect().top + window.scrollY;
+        const bodyBottom = body.getBoundingClientRect().bottom + window.scrollY;
+        const max = Math.max(0, bodyBottom - 32 - sideTop - side.offsetHeight);
+        const want = -frameTop + 16 - sideTop;
+        side.style.transform = 'translateY(' + Math.round(Math.min(max, Math.max(0, want))) + 'px)';
+      }
+      window.addEventListener('message', e => {
+        const d = e.data;
+        if (e.source !== window.parent || !d || d.source !== 'bsg-site' || d.type !== 'frame-top') return;
+        last = d.top; place(last);
+      });
+      wide.addEventListener('change', () => last !== null && place(last));
+    })();
+  </script>
+`;
+const bodyEnd = s.lastIndexOf('</body>');
+s = s.slice(0, bodyEnd) + follow + s.slice(bodyEnd);
+
 fs.writeFileSync(OUT, s);
 console.log('wrote', OUT);

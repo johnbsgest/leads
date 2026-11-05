@@ -1349,5 +1349,30 @@
       window.addEventListener('load', report);
     }
   </script>
+  <script>
+    (function () {
+      if (window.parent === window) return;
+      const side = document.querySelector('.v2-side');
+      const body = document.querySelector('.v2-body');
+      if (!side || !body) return;
+      const wide = window.matchMedia('(min-width: 860px)');
+      let last = null;
+      function place(frameTop) {
+        if (!wide.matches) { side.style.transform = ''; return; }
+        side.style.transform = '';
+        const sideTop = side.getBoundingClientRect().top + window.scrollY;
+        const bodyBottom = body.getBoundingClientRect().bottom + window.scrollY;
+        const max = Math.max(0, bodyBottom - 32 - sideTop - side.offsetHeight);
+        const want = -frameTop + 16 - sideTop;
+        side.style.transform = 'translateY(' + Math.round(Math.min(max, Math.max(0, want))) + 'px)';
+      }
+      window.addEventListener('message', e => {
+        const d = e.data;
+        if (e.source !== window.parent || !d || d.source !== 'bsg-site' || d.type !== 'frame-top') return;
+        last = d.top; place(last);
+      });
+      wide.addEventListener('change', () => last !== null && place(last));
+    })();
+  </script>
 </body>
 </html>
