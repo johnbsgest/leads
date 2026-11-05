@@ -186,11 +186,42 @@ const css = `
     /* Inside the website's frame: no page background or outer padding, the site supplies those. */
     html.embedded body { background: transparent; }
     html.embedded .v2-shell { padding: 0; max-width: none; }
-    html.embedded .v2-body { box-shadow: none; border: 1px solid #e6e6e6; border-top: 0; }
+    html.embedded .v2-body { box-shadow: none; border: 1px solid #2a2a2a; border-top: 0; }
     @media (max-width: 640px) {
       html.embedded .v2-head { border-radius: 16px 16px 0 0; }
       html.embedded .v2-body { border-radius: 0 0 16px 16px; }
     }
+
+    /* ================= dark theme (matches the website) ================= */
+    :root { --text: #f2f2f0; --muted: #9b9b96; --border: #2e2e2e; --line: #2a2a2a; --panel: #151515; --field: #1d1d1d; }
+    body { background: #0b0b0b; color: var(--text); }
+    .v2-body { background: #141414; box-shadow: 0 18px 40px rgba(0,0,0,.5); }
+    .v2-step { border-bottom-color: var(--line); }
+    .v2-num { background: var(--accent); color: #111; }
+    .v2-step-head h3, .label { color: #fff; }
+    .req { color: var(--accent); }
+    input, textarea, select { background: var(--field); border-color: var(--border); color: #fff; }
+    input::placeholder, textarea::placeholder { color: #75756f; }
+    input:focus, textarea:focus, select:focus { background: #222; }
+    .service-card, .contact-card, .covers-card { background: var(--field); border-color: var(--border); color: #d8d8d4; }
+    .service-card.selected, .contact-card.selected, .covers-card.selected { background: #2a1c06; color: #fff; border-color: var(--accent); }
+    @media (hover: hover) and (pointer: fine) {
+      .service-card:hover, .contact-card:hover, .covers-card:hover { color: #fff; background: var(--field); }
+    }
+    /* Black line icons on white squares: invert to white on black, then screen drops the black. */
+    .service-icon { filter: invert(1); mix-blend-mode: screen; background: transparent; }
+    .other-textarea { background: #222; border-color: rgba(255,153,10,.5); color: #fff; }
+    .photo-add { background: var(--field); border-color: #3a3a3a; color: #d8d8d4; }
+    .photo-thumb { border-color: var(--border); }
+    .street-view-container { background: var(--field); border-color: var(--border); }
+    .error { color: #ff8a80; }
+    #coversWarning { color: #ffb4ab; background: #2a1414; border-color: #5c2626; }
+    .v2-side { background: #0b0b0b; border: 1px solid var(--line); }
+    .modal-overlay { background: rgba(0,0,0,.7); }
+    .modal-box { background: #1a1a1a; color: #fff; border: 1px solid var(--line); }
+    .modal-box h3 { color: #6ee7a0; }
+    .modal-icon { background: #12301f; }
+    html.embedded body { background: transparent; }
 `;
 const styleEnd = s.indexOf('\n  </style>');
 s = s.slice(0, styleEnd) + '\n' + css + s.slice(styleEnd + 1);
@@ -208,15 +239,23 @@ const follow = `  <script>
       const body = document.querySelector('.v2-body');
       if (!side || !body) return;
       const wide = window.matchMedia('(min-width: 860px)');
-      let last = null;
+      let last = null, cur = 0;
+      // Glide to each new spot instead of jumping (skipped for reduced motion).
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        side.style.transition = 'transform .35s cubic-bezier(.2,.7,.2,1)';
+        side.style.willChange = 'transform';
+      }
       function place(frameTop) {
-        if (!wide.matches) { side.style.transform = ''; return; }
-        side.style.transform = '';
-        const sideTop = side.getBoundingClientRect().top + window.scrollY;
+        if (!wide.matches) { cur = 0; side.style.transform = ''; return; }
+        // Natural position from offsetTop, which ignores transforms (so a glide in progress
+        // doesn't throw the measurement off, and there's no snap-back to measure).
+        let sideTop = 0;
+        for (let el = side; el; el = el.offsetParent) sideTop += el.offsetTop;
         const bodyBottom = body.getBoundingClientRect().bottom + window.scrollY;
         const max = Math.max(0, bodyBottom - 32 - sideTop - side.offsetHeight);
         const want = -frameTop + 16 - sideTop;
-        side.style.transform = 'translateY(' + Math.round(Math.min(max, Math.max(0, want))) + 'px)';
+        cur = Math.round(Math.min(max, Math.max(0, want)));
+        side.style.transform = 'translateY(' + cur + 'px)';
       }
       window.addEventListener('message', e => {
         const d = e.data;

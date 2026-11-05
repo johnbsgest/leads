@@ -53,17 +53,6 @@
       overflow: hidden;
     }
 
-    /* Logo art has its own black field, so the banner matches it edge to edge. */
-    .intake-logo {
-      background: #000;
-    }
-
-    .intake-logo img {
-      display: block;
-      width: 100%;
-      height: auto;
-    }
-
     .intake-header {
       padding: 20px 20px 12px;
       border-bottom: 1px solid #ececec;
@@ -578,7 +567,6 @@
     @media (min-width: 700px) {
       .intake-wrap { max-width: 1080px; }
       .form-cols .service-cards { grid-template-columns: repeat(2, 1fr); }
-      .intake-logo img { max-width: 560px; margin: 0 auto; }
       .form-cols { grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
       .form-cols > .col { display: flex; flex-direction: column; gap: 14px; }
       .form-cols .field-contact { order: 0; }
@@ -589,9 +577,6 @@
 <body>
   <div class="intake-wrap">
     <div class="intake-card">
-      <div class="intake-logo">
-        <img src="images/bsg-logo-banner.png" alt="Bethlehem Seamless Gutters" width="2146" height="732" />
-      </div>
       <div class="intake-header">
         <h2>Request an Estimate</h2>
         <p>Fill this out and we’ll follow up during business hours.</p>
@@ -1238,6 +1223,12 @@
     // Fills the same fields picking a suggestion would, so the address counts as valid.
     (function () {
       const q = new URLSearchParams(location.search);
+      // ?service=Cleaning (etc.) starts with that service picked, e.g. from the website's Gutter Cleaning page
+      const svc = (q.get('service') || '').trim();
+      const card = svc && Array.from(document.querySelectorAll('.service-card')).find(c => c.dataset.value === svc);
+      if (card && !card.classList.contains('selected')) card.click();
+      const title = document.querySelector('.v2-head h1');   // v2 only
+      if (title && svc === 'Cleaning') title.textContent = 'Book a gutter cleaning';
       const street = (q.get('street') || '').trim(), city = (q.get('city') || '').trim(), zip = (q.get('zip') || '').trim();
       if (!street) return;
       document.getElementById('addressSearch').value = [street, city, ['NY', zip].filter(Boolean).join(' ')].filter(Boolean).join(', ');
